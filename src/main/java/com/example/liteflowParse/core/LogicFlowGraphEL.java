@@ -3,7 +3,7 @@ package com.example.liteflowParse.core;
 import com.example.liteflowParse.core.graph.Edge;
 import com.example.liteflowParse.core.graph.LogicFlowData;
 import com.example.liteflowParse.core.graph.Node;
-import com.example.liteflowParse.core.node.IvyCmp;
+import com.example.liteflowParse.core.node.CmpInfo;
 import lombok.Data;
 
 import java.util.*;
@@ -14,7 +14,7 @@ public class LogicFlowGraphEL {
     private Map<Node, List<Node>> list;//正序
     private List<Edge> edgeList;
     private Map<Node, List<Node>> reverseList;//倒序
-    private Map<Long, IvyCmp> nodeInfoMap;
+    private Map<Long, CmpInfo> nodeInfoMap;
     private List<Node> groupParallelList;
     private List<Node> preList;
     private List<Node> finallyList;
@@ -36,10 +36,9 @@ public class LogicFlowGraphEL {
         return getGraphEL(logicFlowData,logicFlowData.getIvyCmpMap());
     }
 
-    public static LogicFlowGraphEL getGraphEL(LogicFlowData logicFlowData, Map<Long,IvyCmp> nodeInfoMap){
+    public static LogicFlowGraphEL getGraphEL(LogicFlowData logicFlowData, Map<Long, CmpInfo> nodeInfoMap){
         LogicFlowGraphEL graph = new LogicFlowGraphEL();
         graph.setNodeInfoMap(nodeInfoMap);
-        graph.setGroupParallelList(logicFlowData.getGroupParallelList());
         List<Node> nodes = logicFlowData.getNodes();
         List<Node> startNodeList = new ArrayList<>();
         Map<String, Node> nodeMap = nodes.stream().collect(Collectors.toMap(Node::getId, m -> m));

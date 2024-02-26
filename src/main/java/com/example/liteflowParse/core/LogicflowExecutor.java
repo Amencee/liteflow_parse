@@ -4,7 +4,7 @@ package com.example.liteflowParse.core;
 import com.example.liteflowParse.core.el.FlowConvertELUtil;
 import com.example.liteflowParse.core.el.NodeInfoToELUtil;
 import com.example.liteflowParse.core.graph.Node;
-import com.example.liteflowParse.core.node.NodeInfoWrapper;
+import com.example.liteflowParse.core.node.CmpInfo;
 import com.yomahub.liteflow.builder.el.ELBus;
 import com.yomahub.liteflow.builder.el.ELWrapper;
 import com.yomahub.liteflow.builder.el.ThenELWrapper;
@@ -107,7 +107,7 @@ public class LogicflowExecutor {
     }
 
     public static Object getELWrapper(Node node) throws Exception {
-        NodeInfoWrapper nodeInfoWrapper = node.getProperties();
+        CmpInfo nodeInfoWrapper = node.getProperties();
         return NodeInfoToELUtil.buildELWrapper(nodeInfoWrapper);
     }
 

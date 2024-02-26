@@ -9,7 +9,6 @@ public class Edge {
 
     String sourceNodeId;
     String targetNodeId;
-    EdgeProperties properties;
     String text;
 
 
