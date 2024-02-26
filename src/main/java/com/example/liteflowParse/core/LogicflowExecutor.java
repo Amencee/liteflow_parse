@@ -17,7 +17,7 @@ public class LogicflowExecutor {
     public static ELWrapper elWrapper(LogicFlowGraphEL graphEL) throws Exception {
         ELWrapper elWrapper = ELBus.then();
         //单起点
-        if(graphEL.isSingeStart()){
+        if (graphEL.isSingeStart()) {
             parseFlow(elWrapper, graphEL, graphEL.getStartNode(), null);
         }
         return elWrapper;
@@ -29,23 +29,24 @@ public class LogicflowExecutor {
      * 2.如果该节点是聚合节点，与之前的表达式then拼接
      * 3.如果节点为普通的子节点，then拼接
      * 4.如果该节点不是最后一个节点，还有自己的分叉就要递归执行
+     *
      * @param elWrapper
      * @param graphEL
      * @param startNode
      * @param endNode
      */
     public static void parseFlow(ELWrapper elWrapper, LogicFlowGraphEL graphEL, Node startNode, Node endNode) throws Exception {
-        if(graphEL.isFork(startNode)){
-            flowFork(elWrapper, startNode, graphEL);
+        if (graphEL.isFork(startNode)) {
+            flowFork(elWrapper, startNode, endNode,graphEL);
             return;
-        }else if(graphEL.isJoin(startNode)){
+        } else if (graphEL.isJoin(startNode)) {
             flowThen(elWrapper, startNode);
-        }else{
+        } else {
             flowThen(elWrapper, startNode);
         }
-        if(!graphEL.isLastNode(startNode)){
+        if (!graphEL.isLastNode(startNode)) {
             Node nextNode = graphEL.getNextNode(startNode).get(0);
-            if(endNode != null && endNode == nextNode) return;
+            if (endNode != null && endNode == nextNode) return;
             parseFlow(elWrapper, graphEL, nextNode, endNode);
         }
     }
@@ -57,16 +58,17 @@ public class LogicflowExecutor {
      * 1.从开始节点到聚合节点
      * 2.需要when包裹中间的节点
      * 3.如果包含聚合节点，需要重新解析parseFlow
+     *
      * @param wrapper
      * @param startNode
      * @param graphEL
      */
-    public static void flowFork(ELWrapper wrapper, Node startNode, LogicFlowGraphEL graphEL) throws Exception {
+    public static void flowFork(ELWrapper wrapper, Node startNode, Node endNode, LogicFlowGraphEL graphEL) throws Exception {
         flowThen(wrapper, startNode);
         Node joinNode = graphEL.getJoinNode(startNode);
-        flowWhen(wrapper,startNode,joinNode,graphEL);
-        if(joinNode != null){
-            parseFlow(wrapper, graphEL, joinNode, null);
+        flowWhen(wrapper, startNode, joinNode, graphEL);
+        if (joinNode != null && joinNode != endNode) {
+            parseFlow(wrapper, graphEL, joinNode, endNode);
         }
     }
 
@@ -75,6 +77,7 @@ public class LogicflowExecutor {
      * 1.获取分叉节点的所有分叉链
      * 2.在外部使用when包裹
      * 3.顺序解析每一个节点
+     *
      * @param wrapper
      * @param startNode
      * @param endNode
@@ -83,21 +86,23 @@ public class LogicflowExecutor {
     public static void flowWhen(ELWrapper wrapper, Node startNode, Node endNode, LogicFlowGraphEL graphEL) throws Exception {
         List<Node> nextNodeList = graphEL.getNextNode(startNode);
         WhenELWrapper whenELWrapper = ELBus.when();
-        for (Node nextNode : nextNodeList){
+        for (Node nextNode : nextNodeList) {
             ThenELWrapper thenELWrapper = ELBus.then();
             parseFlow(thenELWrapper, graphEL, nextNode, endNode);
             whenELWrapper.when(thenELWrapper);
         }
-        FlowConvertELUtil.convert(wrapper,whenELWrapper);
+        FlowConvertELUtil.convert(wrapper, whenELWrapper);
     }
 
     // 串行处理
     public static void flowThen(ELWrapper wrapper, Node startNode) throws Exception {
-        FlowConvertELUtil.convert(wrapper,nodeToEL(startNode));
+        FlowConvertELUtil.convert(wrapper, nodeToEL(startNode));
     }
 
     public static Object nodeToEL(Node node) throws Exception {
-        if(node == null ){ return null; }
+        if (node == null) {
+            return null;
+        }
         return getELWrapper(node);
     }
 
