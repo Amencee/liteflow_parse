@@ -18,8 +18,7 @@ public class LogicflowJsonUtil {
         logicFlowData.getNodes().removeIf(m->Constant.GROUP_PARALLEL.equalsIgnoreCase(m.getType()));
         logicFlowData.getNodes().removeIf(m->Constant.GROUP_SERIAL.equalsIgnoreCase(m.getType()));
         logicFlowData.getNodes().removeIf(m->Constant.NODE_PRE_COMPONENT.equalsIgnoreCase(m.getType()));
-        List<LogicFlowData> dataList = splitByPaths(logicFlowData);
-        return dataList;
+        return splitByPaths(logicFlowData);
     }
 
 

@@ -3,7 +3,6 @@ package com.example.liteflowParse.core;
 import com.example.liteflowParse.core.graph.Edge;
 import com.example.liteflowParse.core.graph.LogicFlowData;
 import com.example.liteflowParse.core.graph.Node;
-import com.example.liteflowParse.core.node.CmpInfo;
 import lombok.Data;
 
 import java.util.*;
@@ -14,11 +13,6 @@ public class LogicFlowGraphEL {
     private Map<Node, List<Node>> list;//正序
     private List<Edge> edgeList;
     private Map<Node, List<Node>> reverseList;//倒序
-    private Map<Long, CmpInfo> nodeInfoMap;
-    private List<Node> groupParallelList;
-    private List<Node> preList;
-    private List<Node> finallyList;
-    private List<Node> fallbackList;
 
     private Node startNode;
     private List<Node> startNodeList;
@@ -33,12 +27,7 @@ public class LogicFlowGraphEL {
     }
 
     public static LogicFlowGraphEL getGraphEL(LogicFlowData logicFlowData){
-        return getGraphEL(logicFlowData,logicFlowData.getIvyCmpMap());
-    }
-
-    public static LogicFlowGraphEL getGraphEL(LogicFlowData logicFlowData, Map<Long, CmpInfo> nodeInfoMap){
         LogicFlowGraphEL graph = new LogicFlowGraphEL();
-        graph.setNodeInfoMap(nodeInfoMap);
         List<Node> nodes = logicFlowData.getNodes();
         List<Node> startNodeList = new ArrayList<>();
         Map<String, Node> nodeMap = nodes.stream().collect(Collectors.toMap(Node::getId, m -> m));
@@ -148,10 +137,10 @@ public class LogicFlowGraphEL {
             List<Node> commonNodes = allPaths.stream()
                     .flatMap(List::stream) // 扁平化为节点流
                     .collect(Collectors.groupingBy(Node::getId)) // 按节点值分组
-                    .entrySet().stream()
-                    .filter(entry -> entry.getValue().size() == allPaths.size()) // 筛选在所有列表中都存在的节点
-                    .map(entry -> entry.getValue().get(0))
-                    .collect(Collectors.toList());
+                    .values().stream()
+                    .filter(nodes -> nodes.size() == allPaths.size()) // 筛选在所有列表中都存在的节点
+                    .map(nodes -> nodes.get(0))
+                    .toList();
             if(commonNodes.size() == 2){
                 return node;
             }
@@ -198,10 +187,4 @@ public class LogicFlowGraphEL {
         currentPath.remove(currentPath.size() - 1);
         visited.remove(currentNode);
     }
-
-
-
-
-
-
 }

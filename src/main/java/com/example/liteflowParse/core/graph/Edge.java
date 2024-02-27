@@ -9,16 +9,12 @@ public class Edge {
 
     String sourceNodeId;
     String targetNodeId;
-    String text;
-
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Edge edge = (Edge) o;
-
         if (!Objects.equals(sourceNodeId, edge.sourceNodeId)) return false;
         return Objects.equals(targetNodeId, edge.targetNodeId);
     }
